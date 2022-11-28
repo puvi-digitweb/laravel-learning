@@ -1,0 +1,129 @@
+<template>
+	<Header></Header>
+
+	<!-- <table class="table">
+		<thead>
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">First</th>
+				<th scope="col">Last</th>
+				<th scope="col">Handle</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th scope="row">1</th>
+				<td>Mark</td>
+				<td>Otto</td>
+				<td>@mdo</td>
+			</tr>
+			<tr>
+				<th scope="row">2</th>
+				<td>Jacob</td>
+				<td>Thornton</td>
+				<td>@fat</td>
+			</tr>
+			<tr>
+				<th scope="row">3</th>
+				<td colspan="2">Larry the Bird</td>
+				<td>@twitter</td>
+			</tr>
+		</tbody>
+	</table> -->
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th @click="sort('name')">Name</th>
+				<th @click="sort('age')">Age</th>
+				<th @click="sort('breed')">Breed</th>
+				<th @click="sort('gender')">Gender</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr v-for="cat in sortedCats">
+				<td>{{ cat.name }}</td>
+				<td>{{ cat.age }}</td>
+				<td>{{ cat.breed }}</td>
+				<td>{{ cat.gender }}</td>
+			</tr>
+		</tbody>
+	</table>
+	<p>
+		<button :disabled="isActivePrev" @click="prevPage">Previous</button>
+		<button :disabled="isActiveNex" @click="nextPage">Next</button>
+	</p>
+</template>
+
+<script>
+//importing bootstrap 5 Modules
+import Header from "./Components/Header.vue"
+//importing bootstrap 5 Modules
+
+export default {
+	name: 'Index',
+	components: {
+		Header
+	},
+	data() {
+		return {
+			cats: [],
+			currentSort: 'name',
+			currentSortDir: 'asc',
+			pageSize: 3,
+			currentPage: 1,
+			isActivePrev: false,
+			isActiveNex: false
+		}
+	},
+	created: function () {
+		fetch('https://www.raymondcamden.com/.netlify/functions/get-cats')
+			.then(res => res.json())
+			.then(res => {
+				this.cats = res;
+			})
+	},
+	computed: {
+		sortedCats: function () {
+			return this.cats.sort((a, b) => {
+				let modifier = 1;
+				if (this.currentSortDir === 'desc') modifier = -1;
+				if (a[this.currentSort] < b[this.currentSort]) return -1 * modifier;
+				if (a[this.currentSort] > b[this.currentSort]) return 1 * modifier;
+				return 0;
+			}).filter((row, index) => {
+				let start = (this.currentPage - 1) * this.pageSize;
+				let end = this.currentPage * this.pageSize;
+				if (index >= start && index < end) return true;
+			});
+		}
+	},
+	methods: {
+		sort: function (s) {
+			//if s == current sort, reverse
+			if (s === this.currentSort) {
+				this.currentSortDir = this.currentSortDir === 'asc' ? 'desc' : 'asc';
+			}
+			this.currentSort = s;
+		},
+		nextPage: function () {
+			if ((this.currentPage * this.pageSize) < this.cats.length) {
+				this.currentPage++;
+			}
+		},
+		prevPage: function () {
+			if (this.currentPage > 1) {
+				this.currentPage--;
+
+				// if (this.currentPage == 1) {
+				// 	this.isActivePrev = false;
+				// 	this.isActiveNex = true;
+				// } else {
+				// 	this.isActivePrev = true;
+				// 	this.isActiveNex = false;
+				// }
+			}
+		}
+	}
+}
+</script>

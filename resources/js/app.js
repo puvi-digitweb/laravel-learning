@@ -1,0 +1,30 @@
+import './bootstrap';
+
+import {createApp} from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+
+import App from './App.vue'
+import Index from './Index.vue'
+import Test from './Test.vue'
+
+const routes = [
+    { 
+        path: '/', 
+        component: Index 
+    },
+    { 
+        path: '/test', 
+        component: Test 
+    },
+]
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+})
+
+const app = createApp(App)
+
+createApp(App).mount("#app")
+app.use(router)
+app.mount("#app")
