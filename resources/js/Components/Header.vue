@@ -1,5 +1,5 @@
 <template>
-	<el-button>Hello</el-button>
+	<div>Here you can include header component. <br> </div>
 </template>
 
 <script>

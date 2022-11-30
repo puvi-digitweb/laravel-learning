@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Promise\Utils;
 
 class TestController extends Controller
 {
@@ -87,5 +88,20 @@ class TestController extends Controller
         $response_xml = simplexml_load_string($response->getBody(),'SimpleXMLElement', LIBXML_NOCDATA);
         $response_json = json_encode($response_xml);
         return $response_json;
+    }
+
+    public function ebay_GetOrders()
+    {
+        $url = 'https://reqres.in/api/users/';
+        $nbPages = 30;
+        $promises = [];
+
+        for ($page=0 ; $page < $nbPages ; $page++) {
+            $promises[] = Http::async()->get($url . "?page={$page}");
+        }
+
+        // Wait for the responses to be received
+        $responses = Utils::unwrap($promises);
+        return $responses;
     }
 }
