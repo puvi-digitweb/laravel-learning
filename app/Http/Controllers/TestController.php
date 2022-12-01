@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+
+use Illuminate\Http\Client\Pool;
+
 use GuzzleHttp\Promise\Utils;
 
 class TestController extends Controller
@@ -92,16 +95,39 @@ class TestController extends Controller
 
     public function ebay_GetOrders()
     {
+        // $url = 'https://reqres.in/api/users/';
+        // $nbPages = 30;
+        // $promises = [];
+
+        // for ($page=0 ; $page < $nbPages ; $page++) {
+        //     // $promises[] = Http::async()->get($url . "?page={$page}");
+        //     $promises[] = Http::async()->send("GET", $url . "?page={$page}" , []);
+        // }
+
+        // // Wait for the responses to be received
+        // $responses = Utils::unwrap($promises);
+        // return $responses;
+
+        // $response = Http::send("GET", $url . "?page=1" , []);
+        // return $response;
+
+        // $url = 'https://reqres.in/api/users/';
+        // $responses = Http::pool(fn (Pool $pool) => [
+        //     $pool->get($url.'1'),
+        //     $pool->get($url.'2'),
+        // ]);
+        // return $responses[1];
+
         $url = 'https://reqres.in/api/users/';
-        $nbPages = 30;
+        $nbPages = 11;
         $promises = [];
 
-        for ($page=0 ; $page < $nbPages ; $page++) {
-            $promises[] = Http::async()->get($url . "?page={$page}");
+        for ($page=1 ; $page < $nbPages ; $page++) {
+            $promises[] = Http::async()->get($url . "{$page}");
         }
 
         // Wait for the responses to be received
-        $responses = Utils::unwrap($promises);
-        return $responses;
+        $responses_array = Utils::unwrap($promises);
+        return $responses_array;
     }
 }

@@ -24,6 +24,7 @@ export default {
 			host: '',
 			url: '/orders',
 			success: (res) => {
+				console.log(res)
 				this.Aml = res
 			},
 			error: (e) => {
