@@ -118,16 +118,43 @@ class TestController extends Controller
         // ]);
         // return $responses[1];
 
-        $url = 'https://reqres.in/api/users/';
-        $nbPages = 11;
-        $promises = [];
+        // $url = 'https://reqres.in/api/users/';
+        // $nbPages = 11;
+        // $promises = [];
 
-        for ($page=1 ; $page < $nbPages ; $page++) {
-            $promises[] = Http::async()->get($url . "{$page}");
-        }
+        // for ($page=1 ; $page < $nbPages ; $page++) {
+        //     $promises[] = Http::async()->get($url . "{$page}");
+        // }
 
-        // Wait for the responses to be received
-        $responses_array = Utils::unwrap($promises);
-        return $responses_array;
+        // // Wait for the responses to be received
+        // $responses_array = Utils::unwrap($promises);
+        // return $responses_array;
+
+        $url = 'https://api.ebay.com/ws/api.dll';
+
+        $xml = '<?xml version="1.0" encoding="utf-8"?>
+        <GetOrdersRequest xmlns="urn:ebay:apis:eBLBaseComponents">
+            <RequesterCredentials>
+                <eBayAuthToken>v^1.1#i^1#p^3#r^1#I^3#f^0#t^Ul4xMF83OkIyOENCOTYxQ0MzOERFRkI2Rjk2Qzc4MzVEOTZGRTVDXzJfMSNFXjI2MA==</eBayAuthToken>
+            </RequesterCredentials>
+            <NumberOfDays>3</NumberOfDays>
+            <Pagination>
+                <EntriesPerPage>100</EntriesPerPage>
+                <PageNumber>1</PageNumber>
+            </Pagination>
+        </GetOrdersRequest>';
+
+        $response = Http::withHeaders([
+            'Content-Type' => 'text/xml; charset=UTF8',
+            'X-EBAY-API-CALL-NAME' => 'GetOrders',
+            'X-EBAY-API-SITEID' => 3,
+            'X-EBAY-API-COMPATIBILITY-LEVEL' => 1283,
+        ])->send("GET", $url, [
+            "body" => $xml
+        ]);
+
+        $response_xml = simplexml_load_string($response->getBody(),'SimpleXMLElement', LIBXML_NOCDATA);
+        $response_json = json_encode($response_xml);
+        return $response_json;
     }
 }
